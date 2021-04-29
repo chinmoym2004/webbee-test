@@ -97,7 +97,15 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 1');
+        $events  = Event::all();
+
+        // I'm not sure if I need to write raw SQL or follow ORM
+        
+        //DB::statment("SELECT DISTINCT events.*,workshops.* from events LEFT JOIN workshops ON workshops.event_id=events.id")->get();
+
+        //throw new \Exception('implement in coding task 1');
+
+        return response()->json($events);
     }
 
 
