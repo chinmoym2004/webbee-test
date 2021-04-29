@@ -8,7 +8,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Date;
-
+use App\Models\Workshop;
 class EventsController extends BaseController
 {
     /*
@@ -97,7 +97,7 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
-        $events  = Event::all();
+        $events  = Event::with('workshops')->get();
 
         // I'm not sure if I need to write raw SQL or follow ORM
         
@@ -184,6 +184,16 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+        //throw new \Exception('implement in coding task 2');
+
+        $get_event_ids = Workshop::whereRaw('DATE(start)>=DATE("'.date('Y-m-d').'")')->pluck('event_id');
+
+
+        $events  = Event::with(['workshops' => function($q) {
+                        $q->whereRaw('DATE(start)>=DATE("'.date('Y-m-d').'")');
+                    }])->whereIn('id',$get_event_ids)                  
+                ->get();
+
+        return response()->json($events);
     }
 }
